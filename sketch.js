@@ -1,103 +1,79 @@
-let ax, ay, ar, adx, ady
-let bx, by, br, bdx, bdy
-let r, g, b
-let axdir
-let aydir
-let bxdir
-let bydir
+let ball = {}
 
 function setup() {
   createCanvas(400, 400);
   ellipseMode(RADIUS)
- 
-  ar = random(15,25)
-  ax = random(ar,width-ar)
-  ay = random(ar,height-ar)
-  adx = random(-3,3)
-  ady = random(-3,3)
-  axdir = -1
-  aydir = -1
-  
-  br = random(15,25)
-  bx = random(br,width-br)
-  by = random(br,height-br)
-  bdx = random(-3,3)
-  bdy = random(-3,3)
-  bxdir = -1
-  bydir = -1
-
-  teledist = (ar + br) - dist(ax, ay, bx, by)
-
-  acr = random(255)
-  acg = random(255)
-  acb = random(255)
-  
-  bcr = random(255)
-  bcg = random(255)
-  bcb = random(255)
-    
-  noStroke()
+  ball = createBall()
+  ball2 = createBall()
+  noStroke() 
 }
 
 function draw() {
-  background(0);
-  
-  fill(color(acr,acg,acb))
-  circle(ax,ay,ar)
-  ax += adx * axdir
-  ay += ady * aydir
-  if(ax < ar || ax > width-ar) {
-    axdir *= -1
-    acr = random(255)
-    acg = random(255)
-    acb = random(255)
-  
-  }
-  if(ay < ar || ay > height-ar) {
-    aydir *= -1
-    acr = random(255)
-    acg = random(255)
-    acb = random(255)
-  
+  background(0)
+  updateBall(ball)
+  updateBall(ball2)
+  ballInteraction(ball,ball2)
   }
   
-  fill(color(bcr,bcg,bcb))
-  circle(bx,by,br)
-  bx += bdx * bxdir
-  by += bdy * bydir
-  if(bx < br || bx > width-br) {
-    bxdir *= -1
-    bcr = random(255)
-    bcg = random(255)
-    bcb = random(255)
+function createBall() {
+  let newBall = {}
+  newBall.r = random(10,20)
+  setRandomPosition(newBall)
+  setRandomVelocity(newBall)
   
-  }
-  if(by < br || by > height-br) {
-    bydir *= -1
-    bcr = random(255)
-    bcg = random(255)
-    bcb = random(255)
-  
-  }
-  
-  if(dist(ax,ay,bx,by) < ar + br){
-    [adx,ady,bdx,bdy] = [bdx,bdy,adx,ady] 
+  newBall.c = createRandomColor() 
+  return newBall
+}
+
+function setRandomPosition( b, xMin = b.r, yMin = b.r, xMax = width-b.r, yMax = height-b.r) {
+  b.x = random(xMin, xMax)
+  b.y = random(yMin, yMax)  
+}
+
+function setRandomVelocity(b) {
+  b.dx = random(-3,3)
+  b.dy = random(-3,3)  
+}
+
+function createRandomColor() {
+    return color(random(255),random(255),random(255))
+}
+
+function ballInteraction(b,b2){
+  if(dist(b.x,b.y,b2.x,b2.y) < b.r + b2.r){
+    [b.dx,b.dy,b2.dx,b2.dy] = [b2.dx,b2.dy,b.dx,b.dy] 
         
-    let centervec = [(bx - ax), (by - ay)]
-    let vecmag = sqrt((bx - ax)**2 + (by - ay)**2)
+    let centervec = [(b2.x - b.x), (b2.y - b.y)]
+    let vecmag = sqrt((b2.x - b.x)**2 + (b2.y - b.y)**2)
     
     let moveamount = 7
     
     centervec[0] /= vecmag / moveamount
     centervec[1] /= vecmag / moveamount
 
-    ax -= centervec[0]
-    ay -= centervec[1]
-    bx += centervec[0]
-    by += centervec[1]
+    b.x -= centervec[0]
+    b.y -= centervec[1]
+    b2.x += centervec[0]
+    b2.y += centervec[1]
     
-    ar += 3
-    br += 3
+    b.r += 7
+    b2.r += 7
   }
-  
 }
+
+function updateBall(b) {
+  fill(b.c)
+  circle(b.x,b.y,b.r)
+  b.x += b.dx 
+  b.y += b.dy
+  if( b.x < b.r || b.x > width- b.r) {
+    b.dx *= -1
+  }
+  if( b.y < b.r || b.y > height - b.r ) {
+    b.dy *= -1
+  }
+}
+
+
+
+
