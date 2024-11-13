@@ -68,12 +68,10 @@ function updateBall(b) {
   b.y += b.dy
   if( b.x < b.r || b.x > width- b.r) {
     b.dx *= -1
+    b.c =  createRandomColor() 
   }
   if( b.y < b.r || b.y > height - b.r ) {
     b.dy *= -1
+    b.c =  createRandomColor() 
   }
 }
-
-
-
-
